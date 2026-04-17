@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/"
+title = "BlockChat - Blokcheyn Chat"
+version = "1.0.0"
+id = "artifacts/blockchain-chat"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/" ]
+localPort = 23126
+
+[services.development]
+run = "pnpm --filter @workspace/blockchain-chat run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/blockchain-chat", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/blockchain-chat", "run", "serve" ]
+
+[services.env]
+PORT = "23126"
+BASE_PATH = "/"
