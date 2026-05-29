@@ -71,9 +71,13 @@ function roomToChat(room: any): Chat {
   return {
     id: room.id,
     name: room.name,
-    participantAddress: room.created_by || "0x000",
-    lastMessage: room.last_message || "",
-    lastMessageTime: room.last_message_time ? new Date(room.last_message_time).getTime() : 0,
+    participantAddress: room.participantAddress || room.createdBy || room.created_by || "0x000",
+    lastMessage: room.lastMessage || room.last_message || "",
+    lastMessageTime: room.lastMessageTime
+      ? new Date(room.lastMessageTime).getTime()
+      : room.last_message_time
+      ? new Date(room.last_message_time).getTime()
+      : 0,
     unreadCount: 0,
   };
 }
@@ -173,7 +177,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       unsubConnected = socket.on("connected", () => setIsOnline(true));
       unsubDisconnected = socket.on("disconnected", () => setIsOnline(false));
 
-      unsubNewMsg = socket.on("new_message", ({ message }: any) => {
+      unsubNewMsg = socket.on("new_message", (data: any) => {
+        const message = data.message || data;
         const roomId = message.roomId || message.room_id;
         const msg = serverMsgToLocal(message, roomId);
 

@@ -28,13 +28,13 @@ function formatDate(ts: number): string {
 }
 
 const GRADIENT_SETS: [string, string][] = [
-  ["#6c5ce7", "#a29bfe"],
+  ["#7c6ff7", "#a89ef8"],
   ["#e17055", "#fd79a8"],
-  ["#00b894", "#00cec9"],
-  ["#0652dd", "#1e90ff"],
-  ["#6ab04c", "#badc58"],
-  ["#eb4d4b", "#ff7979"],
-  ["#f9ca24", "#f0932b"],
+  ["#10b981", "#34d399"],
+  ["#1e40af", "#3b82f6"],
+  ["#059669", "#10b981"],
+  ["#dc2626", "#f87171"],
+  ["#d97706", "#fbbf24"],
 ];
 
 function getGradient(address: string): [string, string] {
@@ -62,57 +62,76 @@ export default function ChatListItem({
     .toUpperCase()
     .slice(0, 2);
 
-  const isDoc = lastMessage.startsWith("Hujjat:") || lastMessage.startsWith("shartnoma") || lastMessage.endsWith(".pdf") || lastMessage.endsWith(".docx");
+  const isDoc =
+    lastMessage.startsWith("Hujjat:") ||
+    lastMessage.endsWith(".pdf") ||
+    lastMessage.endsWith(".docx") ||
+    lastMessage.endsWith(".xlsx");
 
   return (
     <View style={[styles.container, { borderBottomColor: colors.border }]}>
-      <LinearGradient
-        colors={[gradStart, gradEnd]}
-        style={styles.avatar}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <Text style={styles.initials}>{initials}</Text>
-      </LinearGradient>
+      <View style={styles.avatarWrap}>
+        <LinearGradient
+          colors={[gradStart, gradEnd]}
+          style={styles.avatar}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <Text style={styles.initials}>{initials}</Text>
+        </LinearGradient>
+        {unreadCount > 0 && <View style={[styles.onlineBubble, { borderColor: colors.background }]} />}
+      </View>
 
       <View style={styles.content}>
         <View style={styles.topRow}>
           <Text style={[styles.name, { color: colors.foreground }]} numberOfLines={1}>
             {name}
           </Text>
-          <Text style={[styles.time, { color: unreadCount > 0 ? colors.primary : colors.mutedForeground }]}>
+          <Text
+            style={[
+              styles.time,
+              {
+                color: unreadCount > 0 ? colors.primaryLight : colors.mutedForeground,
+                fontFamily: unreadCount > 0 ? "Inter_600SemiBold" : "Inter_400Regular",
+              },
+            ]}
+          >
             {formatDate(lastMessageTime)}
           </Text>
         </View>
+
         <View style={styles.bottomRow}>
           <View style={styles.lastMsgRow}>
             {isDoc && (
-              <Feather name="paperclip" size={12} color={colors.mutedForeground} style={{ marginRight: 3 }} />
+              <View style={[styles.docChip, { backgroundColor: colors.primaryGlow }]}>
+                <Feather name="paperclip" size={10} color={colors.primaryLight} />
+              </View>
             )}
             <Text
               style={[
                 styles.lastMessage,
-                { color: unreadCount > 0 ? colors.secondaryForeground : colors.mutedForeground },
-                unreadCount > 0 && { fontFamily: "Inter_500Medium" },
+                {
+                  color: unreadCount > 0 ? colors.textSecondary : colors.mutedForeground,
+                  fontFamily: unreadCount > 0 ? "Inter_500Medium" : "Inter_400Regular",
+                },
               ]}
               numberOfLines={1}
             >
               {lastMessage || "Xabar yo'q"}
             </Text>
           </View>
-          {unreadCount > 0 && (
+          {unreadCount > 0 ? (
             <LinearGradient
-              colors={["#6c5ce7", "#0652dd"]}
+              colors={["#7c6ff7", "#5548d4"]}
               style={styles.badge}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <Text style={styles.badgeText}>
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </Text>
+              <Text style={styles.badgeText}>{unreadCount > 9 ? "9+" : unreadCount}</Text>
             </LinearGradient>
-          )}
+          ) : null}
         </View>
+
         <Text style={[styles.address, { color: colors.mutedForeground }]}>
           {shortAddress(participantAddress)}
         </Text>
@@ -126,21 +145,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
     gap: 13,
   },
+  avatarWrap: {
+    position: "relative",
+    flexShrink: 0,
+  },
   avatar: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
-    flexShrink: 0,
+  },
+  onlineBubble: {
+    position: "absolute",
+    bottom: 1,
+    right: 1,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#7c6ff7",
+    borderWidth: 2,
   },
   initials: {
     color: "#fff",
-    fontSize: 19,
+    fontSize: 18,
     fontFamily: "Inter_700Bold",
   },
   content: { flex: 1 },
@@ -148,32 +180,41 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 4,
+    marginBottom: 5,
   },
   name: {
     fontSize: 16,
     fontFamily: "Inter_600SemiBold",
     flex: 1,
     marginRight: 8,
+    letterSpacing: -0.2,
   },
   time: {
     fontSize: 12,
-    fontFamily: "Inter_400Regular",
   },
   bottomRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 3,
   },
   lastMsgRow: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
     marginRight: 8,
+    gap: 6,
+  },
+  docChip: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
   },
   lastMessage: {
     fontSize: 14,
-    fontFamily: "Inter_400Regular",
     flex: 1,
   },
   badge: {
@@ -192,7 +233,7 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 11,
     fontFamily: "Inter_400Regular",
-    marginTop: 3,
     fontVariant: ["tabular-nums"],
+    letterSpacing: 0.2,
   },
 });
