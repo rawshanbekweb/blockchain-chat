@@ -8,7 +8,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://YOUR_RAILWAY_URL_HERE"
+        "EXPO_PUBLIC_API_URL": "https://blockchain-chat-5qu9.onrender.com"
       }
     },
     "production": {
@@ -16,7 +16,7 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://YOUR_RAILWAY_URL_HERE"
+        "EXPO_PUBLIC_API_URL": "https://blockchain-chat-5qu9.onrender.com"
       }
     }
   }
